@@ -2,13 +2,9 @@ services:
   - type: web
     name: crypto-tracker-backend
     env: node
-    buildCommand: cd server && npm install
+    buildCommand: cd server && npm install && npm run build
     startCommand: cd server && npm start
     envVars:
       - key: NODE_ENV
         value: production
-      - key: MONGODB_URI
-        fromDatabase:
-          name: crypto-tracker-db
-          property: connectionString
     healthCheckPath: /api/health
