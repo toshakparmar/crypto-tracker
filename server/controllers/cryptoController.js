@@ -5,13 +5,16 @@ const HistoryData = require("../models/HistoryData");
 const COINGECKO_API =
   "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=10&page=1";
 
+/**
+ * GET /api/coins - Fetch top 10 cryptocurrencies
+ */
 const getCoins = async (req, res) => {
   try {
     let coins = await CurrentData.find().sort({ marketCap: -1 });
 
     if (coins.length === 0) {
-      const response = await axios.get(COINGECKO_API);
-      const apiData = response.data.map((coin) => ({
+      const { data } = await axios.get(COINGECKO_API);
+      const apiData = data.map((coin) => ({
         coinId: coin.id,
         name: coin.name,
         symbol: coin.symbol.toUpperCase(),
@@ -27,12 +30,8 @@ const getCoins = async (req, res) => {
       coins = apiData;
     }
 
-    res.json({
-      success: true,
-      data: coins,
-    });
+    res.json({ success: true, data: coins });
   } catch (error) {
-    console.error("Error fetching coins:", error.message);
     res.status(500).json({
       success: false,
       message: "Failed to fetch cryptocurrency data",
@@ -41,10 +40,13 @@ const getCoins = async (req, res) => {
   }
 };
 
+/**
+ * POST /api/history - Save price snapshot to history
+ */
 const saveHistory = async (req, res) => {
   try {
-    const response = await axios.get(COINGECKO_API);
-    const apiData = response.data.map((coin) => ({
+    const { data } = await axios.get(COINGECKO_API);
+    const apiData = data.map((coin) => ({
       coinId: coin.id,
       name: coin.name,
       symbol: coin.symbol.toUpperCase(),
@@ -65,7 +67,6 @@ const saveHistory = async (req, res) => {
       data: apiData,
     });
   } catch (error) {
-    console.error("Error saving history:", error.message);
     res.status(500).json({
       success: false,
       message: "Failed to save price history",
@@ -74,6 +75,9 @@ const saveHistory = async (req, res) => {
   }
 };
 
+/**
+ * GET /api/history/:coinId - Fetch historical price data
+ */
 const getHistory = async (req, res) => {
   try {
     const { coinId } = req.params;
@@ -81,12 +85,8 @@ const getHistory = async (req, res) => {
       .sort({ timestamp: -1 })
       .limit(24);
 
-    res.json({
-      success: true,
-      data: history.reverse(),
-    });
+    res.json({ success: true, data: history.reverse() });
   } catch (error) {
-    console.error("Error fetching history:", error.message);
     res.status(500).json({
       success: false,
       message: "Failed to fetch price history",
@@ -95,8 +95,4 @@ const getHistory = async (req, res) => {
   }
 };
 
-module.exports = {
-  getCoins,
-  saveHistory,
-  getHistory,
-};
+module.exports = { getCoins, saveHistory, getHistory };
