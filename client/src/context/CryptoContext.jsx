@@ -20,20 +20,29 @@ export const CryptoProvider = ({ children }) => {
     const [historicalData, setHistoricalData] = useState([]);
     const [historyLoading, setHistoryLoading] = useState(false);
 
-    const API_BASE_URL = 'http://localhost:5000/api';
+    const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
     const fetchCoins = useCallback(async () => {
         try {
             setLoading(true);
             setError(null);
 
-            const response = await fetch(`${API_BASE_URL}/coins`);
+            console.log('Fetching from:', `${API_BASE_URL}/coins`);
+            
+            const response = await fetch(`${API_BASE_URL}/coins`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                mode: 'cors',
+            });
+
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                throw new Error(`HTTP error! status: ${response.status} - ${response.statusText}`);
             }
 
             const data = await response.json();
-            console.log(data);  
+            console.log('API Response:', data);  
 
             if (Array.isArray(data)) {
                 setCoins(data);
@@ -45,23 +54,44 @@ export const CryptoProvider = ({ children }) => {
             }
         } catch (err) {
             console.error('Error fetching coins:', err);
-            setError('Failed to fetch cryptocurrency data. Please try again later.');
+            
+            // More specific error messages
+            let errorMessage = 'Failed to fetch cryptocurrency data. ';
+            
+            if (err.name === 'TypeError' && err.message.includes('Failed to fetch')) {
+                errorMessage += 'Please check if your backend server is running on http://localhost:5000 and that no ad blocker is blocking the request.';
+            } else if (err.message.includes('CORS')) {
+                errorMessage += 'CORS error - please check server configuration.';
+            } else if (err.message.includes('ERR_BLOCKED_BY_CLIENT')) {
+                errorMessage += 'Request blocked by browser extension or ad blocker. Please disable and try again.';
+            } else {
+                errorMessage += err.message;
+            }
+            
+            setError(errorMessage);
             setCoins([]);
         } finally {
             setLoading(false);
         }
-    }, []);
-
-    const fetchHistoricalData = useCallback(async (coinId) => {
+    }, [API_BASE_URL]);    const fetchHistoricalData = useCallback(async (coinId) => {
         try {
             setHistoryLoading(true);
-            const response = await fetch(`${API_BASE_URL}/history/${coinId}`);
+            console.log('Fetching historical data from:', `${API_BASE_URL}/history/${coinId}`);
+            
+            const response = await fetch(`${API_BASE_URL}/history/${coinId}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                mode: 'cors',
+            });
 
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                throw new Error(`HTTP error! status: ${response.status} - ${response.statusText}`);
             }
 
             const result = await response.json();
+            console.log('Historical data response:', result);
 
             if (result.success && Array.isArray(result.data)) {
                 setHistoricalData(result.data);
@@ -75,7 +105,7 @@ export const CryptoProvider = ({ children }) => {
         } finally {
             setHistoryLoading(false);
         }
-    }, []);
+    }, [API_BASE_URL]);
 
     const handleSort = (key) => {
         let direction = 'asc';
