@@ -140,7 +140,7 @@ const ChartModal = ({ isOpen, onClose, coin }) => {
                         <div className="h-64 sm:h-80 md:h-96 flex items-center justify-center bg-gray-50 dark:bg-gray-800 rounded-lg sm:rounded-xl">
                             <Loading />
                         </div>
-                    ) : historicalData.length > 0 ? (
+                    ) : historicalData && historicalData.length > 0 ? (
                         <div className="h-64 sm:h-80 md:h-96 bg-gray-50 dark:bg-gray-800 rounded-lg sm:rounded-xl p-2 sm:p-4">
                             <CoinChart coinId={coin.coinId} />
                         </div>
@@ -154,6 +154,40 @@ const ChartModal = ({ isOpen, onClose, coin }) => {
                                 <p className="text-sm text-gray-400 dark:text-gray-500 mt-2">
                                     Data will be available after the first hourly update
                                 </p>
+                                <div className="mt-4 space-y-2">
+                                    <button
+                                        onClick={() => {
+                                            console.log('🔄 Retrying to fetch historical data for:', coin.coinId);
+                                            fetchHistoricalData(coin.coinId);
+                                        }}
+                                        className="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors duration-200"
+                                    >
+                                        Retry Loading Chart
+                                    </button>
+                                    <button
+                                        onClick={async () => {
+                                            console.log('🎲 Generating sample data for chart demo');
+                                            try {
+                                                const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/generate-sample-history`, {
+                                                    method: 'POST',
+                                                    headers: { 'Content-Type': 'application/json' }
+                                                });
+                                                if (response.ok) {
+                                                    setTimeout(() => fetchHistoricalData(coin.coinId), 1000);
+                                                } else {
+                                                    console.log('⚠️ Failed to generate sample data, using client fallback');
+                                                    fetchHistoricalData(coin.coinId);
+                                                }
+                                            } catch (err) {
+                                                console.log('⚠️ Error generating sample data, using client fallback');
+                                                fetchHistoricalData(coin.coinId);
+                                            }
+                                        }}
+                                        className="w-full px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm rounded-lg transition-colors duration-200"
+                                    >
+                                        Generate Sample Data
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     )}

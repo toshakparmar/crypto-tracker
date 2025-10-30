@@ -42,7 +42,7 @@ const CoinChart = ({ coinId }) => {
         );
     }
 
-    if (!historicalData.length) {
+    if (!historicalData || !historicalData.length) {
         return (
             <div className="flex items-center justify-center h-full">
                 <div className="text-center">
@@ -51,21 +51,42 @@ const CoinChart = ({ coinId }) => {
                     </div>
                     <p className="text-gray-500 dark:text-gray-400 text-lg font-medium">No historical data available yet</p>
                     <p className="text-gray-400 dark:text-gray-500 text-sm mt-2">Chart data will appear after the first hourly update</p>
+                    <p className="text-gray-400 dark:text-gray-500 text-xs mt-1">CoinID: {coinId}</p>
                 </div>
             </div>
         );
     }
 
-    const priceData = historicalData.map(item => item.price);
+    let processedData = [...historicalData];
+    if (processedData.length === 1) {
+        const singlePoint = processedData[0];
+        const fiveMinutesAgo = new Date(new Date(singlePoint.timestamp).getTime() - 5 * 60 * 1000);
+        processedData.unshift({
+            ...singlePoint,
+            timestamp: fiveMinutesAgo.toISOString(),
+            price: singlePoint.price * 0.999
+        });
+    }
+
+    const priceData = processedData.map(item => {
+        const price = typeof item.price === 'number' ? item.price : parseFloat(item.price) || 0;
+        return price;
+    });
+
     const isUpward = priceData.length > 1 && priceData[priceData.length - 1] > priceData[0];
 
+    const labels = processedData.map(item => {
+        const timestamp = new Date(item.timestamp);
+        const label = timestamp.toLocaleTimeString('en-US', {
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+        return label;
+    });
+
+
     const data = {
-        labels: historicalData.map(item =>
-            new Date(item.timestamp).toLocaleTimeString('en-US', {
-                hour: '2-digit',
-                minute: '2-digit'
-            })
-        ),
+        labels: labels,
         datasets: [
             {
                 label: 'Price (USD)',
@@ -73,22 +94,33 @@ const CoinChart = ({ coinId }) => {
                 borderColor: isUpward
                     ? 'rgb(34, 197, 94)'
                     : 'rgb(239, 68, 68)',
-                backgroundColor: isUpward
-                    ? 'rgba(34, 197, 94, 0.1)'
-                    : 'rgba(239, 68, 68, 0.1)',
-                borderWidth: 3,
+                backgroundColor: function (context) {
+                    const chart = context.chart;
+                    const { ctx, chartArea } = chart;
+                    if (!chartArea) return null;
+
+                    const gradient = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
+                    if (isUpward) {
+                        gradient.addColorStop(0, 'rgba(34, 197, 94, 0.2)');
+                        gradient.addColorStop(1, 'rgba(34, 197, 94, 0.02)');
+                    } else {
+                        gradient.addColorStop(0, 'rgba(239, 68, 68, 0.2)');
+                        gradient.addColorStop(1, 'rgba(239, 68, 68, 0.02)');
+                    }
+                    return gradient;
+                },
+                borderWidth: priceData.length === 1 ? 0 : 2.5,
                 fill: true,
-                tension: 0.4,
-                pointRadius: 4,
-                pointHoverRadius: 8,
-                pointBackgroundColor: isUpward
-                    ? 'rgb(34, 197, 94)'
-                    : 'rgb(239, 68, 68)',
+                tension: 0.8,
+                pointRadius: priceData.length <= 2 ? 8 : priceData.length <= 12 ? 4 : 2,
+                pointHoverRadius: priceData.length <= 2 ? 12 : priceData.length <= 12 ? 8 : 5,
+                showLine: priceData.length > 1,
+                cubicInterpolationMode: 'monotone',
+                spanGaps: true,
+                pointBackgroundColor: isUpward ? 'rgb(34, 197, 94)' : 'rgb(239, 68, 68)',
                 pointBorderColor: '#ffffff',
                 pointBorderWidth: 2,
-                pointHoverBackgroundColor: isUpward
-                    ? 'rgb(34, 197, 94)'
-                    : 'rgb(239, 68, 68)',
+                pointHoverBackgroundColor: isUpward ? 'rgb(34, 197, 94)' : 'rgb(239, 68, 68)',
                 pointHoverBorderColor: '#ffffff',
                 pointHoverBorderWidth: 3,
             },
@@ -98,6 +130,10 @@ const CoinChart = ({ coinId }) => {
     const options = {
         responsive: true,
         maintainAspectRatio: false,
+        animation: {
+            duration: 750,
+            easing: 'easeInOutCubic'
+        },
         plugins: {
             legend: {
                 display: false,
@@ -133,34 +169,45 @@ const CoinChart = ({ coinId }) => {
         },
         scales: {
             x: {
+                display: true,
                 grid: {
                     color: isDark ? 'rgba(75, 85, 99, 0.2)' : 'rgba(229, 231, 235, 0.6)',
                     drawBorder: false,
                 },
                 ticks: {
                     color: isDark ? '#9CA3AF' : '#6B7280',
-                    maxTicksLimit: 8,
+                    maxTicksLimit: labels.length > 24 ? 12 : Math.min(8, labels.length),
                     font: {
                         size: 12,
                         weight: '500',
                     },
+                    callback: function (value, index) {
+                        const skipRatio = Math.ceil(labels.length / 8);
+                        if (index % skipRatio === 0 || index === labels.length - 1) {
+                            return this.getLabelForValue(value);
+                        }
+                        return '';
+                    }
                 },
                 border: {
                     display: false,
                 },
             },
             y: {
+                display: true,
+                beginAtZero: false,
                 grid: {
                     color: isDark ? 'rgba(75, 85, 99, 0.2)' : 'rgba(229, 231, 235, 0.6)',
                     drawBorder: false,
                 },
                 ticks: {
                     color: isDark ? '#9CA3AF' : '#6B7280',
-                    callback: (value) => formatCurrency(value, 4),
+                    callback: (value) => formatCurrency(value, 2),
                     font: {
                         size: 12,
                         weight: '500',
                     },
+                    stepSize: undefined,
                 },
                 border: {
                     display: false,
@@ -180,8 +227,13 @@ const CoinChart = ({ coinId }) => {
                         Price History (24h)
                     </h4>
                     <p className="text-sm text-gray-500 dark:text-gray-400">
-                        {historicalData.length} data points
+                        {processedData.length} data points • {priceData.length > 1 ? 'Dynamic' : 'Static'} chart
                     </p>
+                    {priceData.length > 1 && (
+                        <p className="text-xs text-gray-400 dark:text-gray-500">
+                            Range: ${Math.min(...priceData).toFixed(2)} - ${Math.max(...priceData).toFixed(2)}
+                        </p>
+                    )}
                 </div>
 
                 {priceData.length > 1 && (
