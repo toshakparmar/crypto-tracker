@@ -28,7 +28,7 @@ export const CryptoProvider = ({ children }) => {
             setError(null);
 
             console.log('Fetching from:', `${API_BASE_URL}/coins`);
-            
+
             const response = await fetch(`${API_BASE_URL}/coins`, {
                 method: 'GET',
                 headers: {
@@ -42,7 +42,7 @@ export const CryptoProvider = ({ children }) => {
             }
 
             const data = await response.json();
-            console.log('API Response:', data);  
+            console.log('API Response:', data);
 
             if (Array.isArray(data)) {
                 setCoins(data);
@@ -54,10 +54,10 @@ export const CryptoProvider = ({ children }) => {
             }
         } catch (err) {
             console.error('Error fetching coins:', err);
-            
+
             // More specific error messages
             let errorMessage = 'Failed to fetch cryptocurrency data. ';
-            
+
             if (err.name === 'TypeError' && err.message.includes('Failed to fetch')) {
                 errorMessage += 'Please check if your backend server is running on http://localhost:5000 and that no ad blocker is blocking the request.';
             } else if (err.message.includes('CORS')) {
@@ -67,17 +67,17 @@ export const CryptoProvider = ({ children }) => {
             } else {
                 errorMessage += err.message;
             }
-            
+
             setError(errorMessage);
             setCoins([]);
         } finally {
             setLoading(false);
         }
-    }, [API_BASE_URL]);    const fetchHistoricalData = useCallback(async (coinId) => {
+    }, [API_BASE_URL]); const fetchHistoricalData = useCallback(async (coinId) => {
         try {
             setHistoryLoading(true);
             console.log('Fetching historical data from:', `${API_BASE_URL}/history/${coinId}`);
-            
+
             const response = await fetch(`${API_BASE_URL}/history/${coinId}`, {
                 method: 'GET',
                 headers: {
