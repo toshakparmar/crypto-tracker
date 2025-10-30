@@ -1,16 +1,15 @@
-# 🚀 Crypto Tracker - Full Stack MERN Application
+# Crypto Tracker - Full Stack MERN Application
 
 A modern, responsive cryptocurrency dashboard that displays real-time data for the top 10 cryptocurrencies with interactive charts, theme switching, and automated data collection.
 
-## 🌐 Live Demo
+## Live Demo
 
-- **Frontend**: [https://crypto-tracker-frontend.vercel.app](https://crypto-tracker-frontend.vercel.app)
-- **Backend API**: [https://crypto-tracker-backend.onrender.com](https://crypto-tracker-backend.onrender.com)
-- **API Documentation**: [https://crypto-tracker-backend.onrender.com/api/health](https://crypto-tracker-backend.onrender.com/api/health)
+- **Frontend**: [https://crypto-tracker-pi-amber.vercel.app](https://crypto-tracker-pi-amber.vercel.app)
+- **Backend API**: [https://crypto-tracker-t5yg.onrender.com](https://crypto-tracker-t5yg.onrender.com)
+- **API Documentation**: [https://crypto-tracker-t5yg.onrender.com/api/health](https://crypto-tracker-t5yg.onrender.com/api/health)
 
-![Crypto Tracker Demo](https://via.placeholder.com/800x400/667eea/ffffff?text=Crypto+Tracker+Dashboard)
 
-## 🌟 Features
+## Features
 
 - **Real-time Data**: Live cryptocurrency prices from CoinGecko API
 - **Auto-refresh**: Updates every 30 minutes automatically
@@ -22,7 +21,7 @@ A modern, responsive cryptocurrency dashboard that displays real-time data for t
 - **Responsive Design**: Mobile-first design with Tailwind CSS
 - **Error Handling**: Graceful error states and retry functionality
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 ### Frontend Technologies
 
@@ -58,7 +57,7 @@ A modern, responsive cryptocurrency dashboard that displays real-time data for t
 | **Vercel**        | Frontend deployment           | Free tier |
 | **Render**        | Backend deployment            | Free tier |
 
-## 📦 Project Structure
+## Project Structure
 
 ```
 crypto-tracker/
@@ -99,7 +98,7 @@ crypto-tracker/
 └── .env.example
 ```
 
-## 🚀 Setup and Installation
+## Setup and Installation
 
 ### Prerequisites
 
@@ -407,422 +406,12 @@ Health check endpoint for monitoring.
 
 | Service         | URL                                                                                                              | Status    |
 | --------------- | ---------------------------------------------------------------------------------------------------------------- | --------- |
-| **Frontend**    | [https://crypto-tracker-frontend.vercel.app](https://crypto-tracker-frontend.vercel.app)                         | 🟢 Online |
-| **Backend API** | [https://crypto-tracker-backend.onrender.com](https://crypto-tracker-backend.onrender.com)                       | 🟢 Online |
-| **API Health**  | [https://crypto-tracker-backend.onrender.com/api/health](https://crypto-tracker-backend.onrender.com/api/health) | 🟢 Online |
-| **Live Data**   | [https://crypto-tracker-backend.onrender.com/api/coins](https://crypto-tracker-backend.onrender.com/api/coins)   | 🟢 Online |
+| **Frontend**    | [https://crypto-tracker-pi-amber.vercel.app/](https://crypto-tracker-pi-amber.vercel.app/)                         | 🟢 Online |
+| **Backend API** | [https://crypto-tracker-t5yg.onrender.com/](https://crypto-tracker-t5yg.onrender.com)                       | 🟢 Online |
+| **API Health**  | [https://crypto-tracker-t5yg.onrender.com/api/health](https://crypto-tracker-t5yg.onrender.com/api/health) | 🟢 Online |
+| **Live Data**   | [https://crypto-tracker-t5yg.onrender.com/api/coins](https://crypto-tracker-t5yg.onrender.com/api/coins)   | 🟢 Online |
 
-### Backend Deployment (Render)
 
-#### Step 1: Prepare for Deployment
-
-```bash
-# Ensure your package.json has the correct scripts
-{
-  "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js",
-    "build": "echo 'No build step required'"
-  }
-}
-```
-
-#### Step 2: Deploy to Render
-
-1. **Create Account**: Sign up at [Render.com](https://render.com)
-2. **New Web Service**: Click "New" → "Web Service"
-3. **Connect Repository**: Link your GitHub repository
-4. **Configure Settings**:
-   ```
-   Name: crypto-tracker-backend
-   Environment: Node
-   Build Command: npm install
-   Start Command: npm start
-   ```
-
-#### Step 3: Environment Variables
-
-Set these in Render dashboard:
-
-```env
-MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/crypto-tracker
-PORT=10000
-NODE_ENV=production
-CLIENT_URL=https://crypto-tracker-frontend.vercel.app
-COINGECKO_API_URL=https://api.coingecko.com/api/v3
-```
-
-### Frontend Deployment (Vercel)
-
-#### Step 1: Prepare Build Configuration
-
-```json
-// package.json
-{
-  "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
-  }
-}
-```
-
-```javascript
-// vite.config.js
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
-
-export default defineConfig({
-  plugins: [react()],
-  build: {
-    outDir: "dist",
-    sourcemap: false,
-    minify: "terser",
-  },
-});
-```
-
-#### Step 2: Deploy to Vercel
-
-1. **Create Account**: Sign up at [Vercel.com](https://vercel.com)
-2. **Import Project**: Click "New Project" → Import from GitHub
-3. **Configure Settings**:
-   ```
-   Framework Preset: Vite
-   Build Command: npm run build
-   Output Directory: dist
-   Install Command: npm install
-   ```
-
-#### Step 3: Environment Variables
-
-Set in Vercel dashboard:
-
-```env
-VITE_API_URL=https://crypto-tracker-backend.onrender.com/api
-VITE_NODE_ENV=production
-```
-
-### Database Setup (MongoDB Atlas)
-
-#### Production Configuration
-
-1. **Create Production Cluster**:
-
-   - Sign up at [MongoDB Atlas](https://www.mongodb.com/atlas)
-   - Create M0 cluster (free tier)
-   - Choose AWS/Google Cloud region closest to your users
-
-2. **Security Configuration**:
-
-   ```bash
-   # Network Access
-   IP Whitelist: 0.0.0.0/0 (for Render)
-
-   # Database User
-   Username: crypto-tracker-prod
-   Password: [Generate strong password]
-   Role: Atlas Admin (or custom read/write)
-   ```
-
-3. **Connection String**:
-   ```
-   mongodb+srv://crypto-tracker-prod:password@cluster0.abc123.mongodb.net/crypto-tracker-prod?retryWrites=true&w=majority
-   ```
-
-### Deployment Verification
-
-#### Health Check Endpoints
-
-```bash
-# Backend health
-curl https://crypto-tracker-backend.onrender.com/api/health
-
-# Response:
-{
-  "status": "OK",
-  "timestamp": "2024-01-15T10:30:00.000Z",
-  "uptime": "2h 15m 30s",
-  "database": "connected"
-}
-```
-
-#### Performance Monitoring
-
-```javascript
-// Monitor cron job execution
-GET / api / current;
-// Should return data updated within last hour
-
-// Check API response time
-GET / api / coins;
-// Should respond within 500ms
-```
-
-### Continuous Deployment
-
-#### GitHub Actions (Optional)
-
-```yaml
-# .github/workflows/deploy.yml
-name: Deploy to Production
-on:
-  push:
-    branches: [main]
-
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Deploy to Vercel
-        uses: amondnet/vercel-action@v20
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.ORG_ID }}
-          vercel-project-id: ${{ secrets.PROJECT_ID }}
-```
-
-### Production Checklist
-
-- [ ] **Backend deployed on Render** ✅
-- [ ] **Frontend deployed on Vercel** ✅
-- [ ] **MongoDB Atlas configured for production** ✅
-- [ ] **Environment variables set correctly** ✅
-- [ ] **CORS configured for production domains** ✅
-- [ ] **SSL certificates active (automatic)** ✅
-- [ ] **Cron job running and saving data** ✅
-- [ ] **API endpoints responding correctly** ✅
-- [ ] **Frontend connecting to production API** ✅
-- [ ] **Database storing data successfully** ✅
-
-## 🔧 Development Scripts
-
-### Server Scripts
-
-```bash
-npm start          # Start production server
-npm run dev        # Start development server with nodemon
-```
-
-### Client Scripts
-
-```bash
-npm run dev        # Start development server
-npm run build      # Build for production
-npm run preview    # Preview production build
-npm run lint       # Run ESLint
-```
-
-## 🧪 Testing & Development
-
-### Development Scripts
-
-#### Backend Commands
-
-```bash
-cd server
-
-# Development with auto-restart
-npm run dev
-
-# Production mode
-npm start
-
-# Test API endpoints
-npm run test:api
-```
-
-#### Frontend Commands
-
-```bash
-cd client
-
-# Development server
-npm run dev
-
-# Build for production
-npm run build
-
-# Preview production build
-npm run preview
-
-# Lint code
-npm run lint
-
-# Format code
-npm run format
-```
-
-### API Testing
-
-#### Using Postman/Thunder Client
-
-```bash
-# Health Check
-GET http://localhost:5000/api/health
-
-# Get live crypto data
-GET http://localhost:5000/api/coins
-
-# Get cached data
-GET http://localhost:5000/api/current
-
-# Get historical data
-GET http://localhost:5000/api/history/bitcoin?limit=24
-```
-
-#### Using cURL
-
-```bash
-# Test production API
-curl -X GET "https://crypto-tracker-backend.onrender.com/api/health"
-
-# Test with headers
-curl -H "Content-Type: application/json" \
-     -X GET "https://crypto-tracker-backend.onrender.com/api/coins"
-```
-
-### Manual Testing Checklist
-
-#### ✅ **Backend Testing**
-
-- [ ] Server starts without errors
-- [ ] MongoDB connection established
-- [ ] Cron job initializes and runs
-- [ ] API endpoints return correct data
-- [ ] Error handling works properly
-- [ ] CORS configured correctly
-
-#### ✅ **Frontend Testing**
-
-- [ ] Application loads successfully
-- [ ] Crypto data displays correctly
-- [ ] Search and filter functionality
-- [ ] Theme toggle (dark/light mode)
-- [ ] Auto-refresh every 30 minutes
-- [ ] Interactive charts work
-- [ ] Responsive design on mobile/tablet/desktop
-- [ ] Loading states and error handling
-
-#### ✅ **Integration Testing**
-
-- [ ] Frontend connects to backend API
-- [ ] Real-time data updates
-- [ ] Historical data in charts
-- [ ] Error states when API fails
-- [ ] Fallback to cached data works
-
-## 📈 Performance Optimizations
-
-- **Lazy Loading**: Components loaded on demand
-- **Image Optimization**: Optimized cryptocurrency logos
-- **Caching**: Local storage for theme preferences
-- **Debounced Search**: Prevents excessive API calls
-- **Memoization**: React hooks for expensive calculations
-
-## 🔒 Security Features
-
-- **CORS**: Configured for specific origins
-- **Environment Variables**: Sensitive data in env files
-- **Error Handling**: No sensitive information in error messages
-- **Rate Limiting**: Natural rate limiting through cron scheduling
-
-## 🐛 Troubleshooting
-
-### Common Issues
-
-**1. MongoDB Connection Error**
-
-- Verify connection string in `.env`
-- Check network access in MongoDB Atlas
-- Ensure database user has correct permissions
-
-**2. CORS Errors**
-
-- Update `CLIENT_URL` in server `.env`
-- Check frontend API URL configuration
-
-**3. API Rate Limiting**
-
-- CoinGecko has rate limits for free tier
-- Implement caching to reduce API calls
-
-**4. Build Errors**
-
-- Clear `node_modules` and reinstall dependencies
-- Check Node.js version compatibility
-
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 👥 Contributing
-
-1. Fork the project
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-## 📞 Support
-
-For support, please open an issue on GitHub or contact the development team.
-
-## � Project Statistics
-
-| Metric                   | Value              |
-| ------------------------ | ------------------ |
-| **Total Files**          | 25+                |
-| **Lines of Code**        | 2,500+             |
-| **Components**           | 8 React Components |
-| **API Endpoints**        | 5 REST Endpoints   |
-| **Database Collections** | 1 (Crypto)         |
-| **Cron Jobs**            | 1 (Hourly)         |
-| **Build Time**           | ~2 minutes         |
-| **Bundle Size**          | ~500KB             |
-
-## 🤝 Contributing
-
-We welcome contributions! Please follow these steps:
-
-1. **Fork the repository**
-2. **Create a feature branch**: `git checkout -b feature/amazing-feature`
-3. **Commit changes**: `git commit -m 'Add amazing feature'`
-4. **Push to branch**: `git push origin feature/amazing-feature`
-5. **Open a Pull Request**
-
-### Development Guidelines
-
-- Follow ESLint configuration
-- Write meaningful commit messages
-- Test your changes locally
-- Update documentation if needed
-
-## 📞 Support & Contact
-
-- **Issues**: [GitHub Issues](https://github.com/yourusername/crypto-tracker/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/yourusername/crypto-tracker/discussions)
-- **Email**: support@vrautomations.com
-
-## �🙏 Acknowledgments
-
-- **[CoinGecko](https://www.coingecko.com/)** - Free cryptocurrency API
-- **[MongoDB Atlas](https://www.mongodb.com/atlas)** - Cloud database platform
-- **[Tailwind CSS](https://tailwindcss.com/)** - Utility-first CSS framework
-- **[Chart.js](https://www.chartjs.org/)** - Interactive chart library
-- **[Lucide Icons](https://lucide.dev/)** - Beautiful icon set
-- **[Vercel](https://vercel.com/)** - Frontend deployment platform
-- **[Render](https://render.com/)** - Backend deployment platform
-
-## 📜 License
-
-This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
-
----
-
-<div align="center">
-  <strong>Built with ❤️ by VR Automations</strong>
-  <br />
-  <sub>Making cryptocurrency data accessible to everyone</sub>
-</div>
